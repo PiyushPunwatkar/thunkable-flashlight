@@ -1,0 +1,10 @@
+{
+  "name": "socky-big-journey",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Procedurally rendered 60s vertical children's short: Socky's Big Journey",
+  "dependencies": {
+    "three": "0.186.1"
+  }
+}
