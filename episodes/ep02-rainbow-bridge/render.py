@@ -357,8 +357,16 @@ def draw_char(cv, st, t, name):
         pth = skia.Path(); pth.moveTo(4, -120); pth.quadTo(20, -88, 37, -120); pth.close()
         cv.drawPath(pth, P(C('#4a0a10')))
         cv.save(); cv.clipPath(pth, doAntiAlias=True); cv.drawOval(oval(21, -100, 10, 7), P(C('#ff7a8a'))); cv.restore()
+    elif m == 'frown':
+        pth = skia.Path(); pth.moveTo(8, -110); pth.quadTo(20, -122, 32, -110)
+        cv.drawPath(pth, P(C('#4a0a10'), stroke=4.2))
     else:
         cv.drawOval(oval(21, -112, 7, 9), P(C('#4a0a10')))
+    if st.get('brow', 0) > 0:  # worried brows (later episodes)
+        b = st['brow']
+        for (bx, by, s) in ((-4, -192, 1), (33, -184, -1)):
+            pth = skia.Path(); pth.moveTo(bx - 14, by + 4 * b * s); pth.quadTo(bx, by - 4 * b, bx + 14, by - 4 * b * s)
+            cv.drawPath(pth, P(C('#4a0a10', min(1, b)), stroke=4))
     cv.restore()
 
 # ------------------------------------------------------------ butterflies & flowers
