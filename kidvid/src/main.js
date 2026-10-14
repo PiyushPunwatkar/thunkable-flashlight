@@ -30,7 +30,7 @@ const og = overlay.getContext('2d');
 const camera = new THREE.PerspectiveCamera(36, W / H, 0.05, 400);
 const composer = new EffectComposer(renderer, new THREE.WebGLRenderTarget(W, H, { type: THREE.HalfFloatType, samples: +(qs.get('msaa') ?? 4) }));
 const set = buildMeadow(new THREE.PMREMGenerator(renderer).fromScene(new RoomEnvironment(), 0.04).texture);
-const scene = set.scene; window.__scene = scene;
+const scene = set.scene;
 const bokeh = new BokehPass(scene, camera, { focus: 2.7, aperture: 0.0016, maxblur: 0.006 });
 const bloom = new UnrealBloomPass(new THREE.Vector2(W, H), 0.18, 0.5, 0.96);
 composer.addPass(new RenderPass(scene, camera)); if (qs.get('bokeh') !== '0') composer.addPass(bokeh); composer.addPass(bloom); composer.addPass(new OutputPass());
