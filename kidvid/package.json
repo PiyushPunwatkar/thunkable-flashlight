@@ -1,0 +1,13 @@
+{
+  "name": "kidvid",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Script-to-video template for 3D kids learning shorts (host mascot + glossy letters)",
+  "dependencies": {
+    "three": "0.186.1"
+  },
+  "devDependencies": {
+    "opentype.js": "^1.3.4"
+  }
+}

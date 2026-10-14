@@ -1,0 +1,14 @@
+{
+  "title": "Buddy's ABCs",
+  "format": { "width": 1280, "height": 720, "fps": 24 },
+  "host": { "name": "Buddy", "species": "puppy", "fur": "#e2a955", "accent": "#2f8fe0", "voice": "am_puck", "pitch": 1.12, "speed": 0.85 },
+  "music": { "bpm": 112 },
+  "beats": [
+    { "type": "intro", "say": ["Hello friends, I'm Buddy!", "Let's learn our ABCs!"] },
+    { "type": "letter", "letter": "A", "word": "Apple", "prop": "apple", "color": "#ec2a2f", "ask": "Can you say A?", "bonus": "ball" },
+    { "type": "letter", "letter": "B", "word": "Ball", "prop": "ball", "color": "#1e9be8", "ask": "Let's say B!" },
+    { "type": "letter", "letter": "C", "word": "Cat", "prop": "cat", "color": "#2fb54a" },
+    { "type": "dance", "say": ["A, B, C!", "Let's dance together!"], "letters": "ABDC" },
+    { "type": "outro", "say": ["Bye bye, friends!"] }
+  ]
+}

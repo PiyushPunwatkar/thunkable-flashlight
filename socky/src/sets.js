@@ -10,7 +10,7 @@ export function std(color, o = {}) { return new THREE.MeshStandardMaterial({ col
 export function plush(color, o = {}) { return new THREE.MeshPhysicalMaterial({ color, roughness: 0.85, sheen: 1, sheenRoughness: 0.5, sheenColor: new THREE.Color('#ffffff').lerp(new THREE.Color(color), 0.3), ...o }); }
 export function glossy(color, o = {}) { return new THREE.MeshPhysicalMaterial({ color, roughness: 0.25, clearcoat: 1, clearcoatRoughness: 0.12, ...o }); }
 
-function mesh(geo, mat, { pos = [0, 0, 0], rot = [0, 0, 0], scale = null, shadow = true } = {}) {
+export function mesh(geo, mat, { pos = [0, 0, 0], rot = [0, 0, 0], scale = null, shadow = true } = {}) {
   const m = new THREE.Mesh(geo, mat);
   m.position.set(...pos); m.rotation.set(...rot);
   if (scale) Array.isArray(scale) ? m.scale.set(...scale) : m.scale.setScalar(scale);

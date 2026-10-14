@@ -1,0 +1,15 @@
+{
+  "title": "Mimi's DEFG",
+  "format": { "width": 1280, "height": 720, "fps": 24 },
+  "host": { "name": "Mimi", "species": "kitten", "voice": "af_sky", "pitch": 1.18, "speed": 0.85 },
+  "music": { "bpm": 116 },
+  "beats": [
+    { "type": "intro", "say": ["Hi friends, I'm Mimi!", "Let's learn four new letters!"] },
+    { "type": "letter", "letter": "D", "word": "Dog", "prop": "dog", "ask": "Can you say D?" },
+    { "type": "letter", "letter": "E", "word": "Egg", "prop": "egg", "praise": "Great job!" },
+    { "type": "letter", "letter": "F", "word": "Fish", "prop": "fish", "ask": "Can you say F?" },
+    { "type": "letter", "letter": "G", "word": "Grapes", "prop": "grapes", "emoji": "🍇", "color": "#a259ff" },
+    { "type": "dance", "say": ["D, E, F, G!", "Dance with me!"] },
+    { "type": "outro", "say": ["See you next time!"] }
+  ]
+}
