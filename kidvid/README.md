@@ -36,7 +36,7 @@ node render.mjs stills /tmp/tl.json /tmp/stills 1,6.5,20 0.5     # times in seco
   "title": "Buddy's ABCs",
   "format": { "width": 1280, "height": 720, "fps": 24 },
   "host":   { "name": "Buddy", "species": "puppy", "fur": "#e2a955", "accent": "#2f8fe0",
-              "voice": "am_puck", "pitch": 1.12, "speed": 0.85 },
+              "voice": "af_heart", "pitch": 1.12, "speed": 0.85 },
   "music":  { "bpm": 112 },
   "beats": [
     { "type": "intro",  "say": ["Hello friends, I'm Buddy!", "Let's learn our ABCs!"] },
@@ -53,7 +53,7 @@ node render.mjs stills /tmp/tl.json /tmp/stills 1,6.5,20 0.5     # times in seco
 |---|---|
 | `format` | Output size and frame rate. The camera auto-fits the stage to any aspect ratio (16:9 is the tuned layout) |
 | `host.species` | `puppy` or `kitten` (procedural rig in `src/critter.js`); `fur` and `accent` (collar) recolour it |
-| `host.voice/pitch/speed` | Any Kokoro voice. `pitch` > 1 raises the voice for a cartoon character |
+| `host.voice/pitch/speed` | Any Kokoro voice. `pitch` > 1 raises the voice for a cartoon character. The default `af_heart` was checked with Whisper on "X is for …" for all 26 letters: 25 come through clean, and E can be misheard. If a letter sounds off in another voice, give that beat a `lead` such as `"The letter E is for"` |
 | `music.bpm` | Tempo of the score; the dance beat is snapped to it so the letters bounce in time |
 
 **Beat types**

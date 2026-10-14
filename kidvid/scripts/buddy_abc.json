@@ -1,7 +1,7 @@
 {
   "title": "Buddy's ABCs",
   "format": { "width": 1280, "height": 720, "fps": 24 },
-  "host": { "name": "Buddy", "species": "puppy", "fur": "#e2a955", "accent": "#2f8fe0", "voice": "am_puck", "pitch": 1.12, "speed": 0.85 },
+  "host": { "name": "Buddy", "species": "puppy", "fur": "#e2a955", "accent": "#2f8fe0", "voice": "af_heart", "pitch": 1.12, "speed": 0.85 },
   "music": { "bpm": 112 },
   "beats": [
     { "type": "intro", "say": ["Hello friends, I'm Buddy!", "Let's learn our ABCs!"] },

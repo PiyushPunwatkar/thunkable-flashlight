@@ -7,7 +7,7 @@ import fs from 'node:fs';
 
 const [mode, scriptPath, out, voPath] = process.argv.slice(2);
 const S = JSON.parse(fs.readFileSync(scriptPath, 'utf8'));
-const host = { name: 'Buddy', species: 'puppy', voice: 'am_puck', pitch: 1.12, speed: 0.85, ...S.host };
+const host = { name: 'Buddy', species: 'puppy', voice: 'af_heart', pitch: 1.12, speed: 0.85, ...S.host };
 const fmt = { width: 1280, height: 720, fps: 24, ...S.format };
 const PALETTE = ['#ec2a2f', '#1e9be8', '#2fb54a', '#ffb81c', '#a259ff', '#ff6fb5', '#ff8a1f', '#14c2c2'];
 
