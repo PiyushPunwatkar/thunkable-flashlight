@@ -269,7 +269,7 @@ for i, e in enumerate(TL["events"]):
     elif typ == "boing":
         add(sfx, t, ball_boing(74), 0.6 * k, 0.5)
     elif typ == "thud":
-        add(sfx, t, thud(k), 0.9, -0.2)
+        add(sfx, t, thud(k), 0.5, -0.2)
     elif typ == "pomf":
         add(sfx, t, pomf(), 0.8, 0.1)
     elif typ == "step":
@@ -324,7 +324,8 @@ def follower(x, att=0.03, rel=0.35, hop=240):
 music, sfx, amb, vo = reverb(music, 2.0, 0.25), reverb(sfx, 1.2, 0.15), reverb(amb, 1.5, 0.3), reverb(vo, 0.6, 0.06)
 voe = follower(vo)
 duck = (1 - 0.65 * np.clip(voe / 0.15, 0, 1))[:, None]
-mix = music * 0.42 * duck + sfx * 0.55 * (0.6 + 0.4 * duck) + amb * 0.5 + vo * 1.0
+# effects duck hard under the voice so a thud never masks a letter name
+mix = music * 0.42 * duck + sfx * 0.55 * (0.25 + 0.75 * duck) + amb * 0.5 + vo * 1.0
 mix = mix[: int(DUR * SR)]
 fo = int(0.5 * SR)
 mix[-fo:] *= np.linspace(1, 0, fo)[:, None]
