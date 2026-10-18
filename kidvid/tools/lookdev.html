@@ -1,0 +1,43 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>kidvid look-dev</title>
+<style>html, body { margin: 0; background: #000; overflow: hidden; } canvas { display: block; }</style>
+<script type="importmap">
+{ "imports": { "three": "../node_modules/three/build/three.module.js", "three/addons/": "../node_modules/three/examples/jsm/" } }
+</script>
+</head>
+<body>
+<script type="module">
+// Character turnaround: front, three-quarter, side and close-up of one pose, for tuning the rig.
+//   lookdev.html?species=puppy&w=1200&h=900&pose={"sit":1}&fur=0
+import * as THREE from 'three';
+import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
+import { Critter } from '../src/critter.js';
+const qs = new URLSearchParams(location.search);
+const W = +qs.get('w') || 1200, H = +qs.get('h') || 900;
+const renderer = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true });
+renderer.setSize(W, H); renderer.shadowMap.enabled = true; renderer.toneMapping = THREE.AgXToneMapping;
+document.body.appendChild(renderer.domElement);
+const scene = new THREE.Scene(); scene.background = new THREE.Color('#8fa9b8');
+scene.environment = new THREE.PMREMGenerator(renderer).fromScene(new RoomEnvironment(), 0.04).texture; scene.environmentIntensity = 0.6;
+const sun = new THREE.DirectionalLight('#fff2e0', 2.5); sun.position.set(-2, 4, 3); sun.castShadow = true; scene.add(sun);
+const ground = new THREE.Mesh(new THREE.PlaneGeometry(10, 10).rotateX(-Math.PI / 2), new THREE.MeshStandardMaterial({ color: '#6f8f55' })); ground.receiveShadow = true; scene.add(ground);
+const c = new Critter(qs.get('species') || 'puppy');
+scene.add(c.group);
+if (qs.get('fur') === '0') c.group.traverse((o) => { if (o.isInstancedMesh) o.visible = false; });
+const pose = { pos: [0, 0, 0], look: [0, 0.7, 3], ...JSON.parse(qs.get('pose') || '{}') };
+c.update(+(qs.get('t') || 1), () => pose);
+const cam = new THREE.PerspectiveCamera(30, (W / 2) / (H / 2), 0.05, 50);
+const views = [[[0, 0.55, 2.4], [0, 0.45, 0]], [[1.5, 0.75, 1.9], [0, 0.45, 0]], [[2.4, 0.5, 0], [0, 0.45, 0]], [[0.25, 0.8, 0.95], [0, 0.72, 0.3]]];
+renderer.setScissorTest(true);
+views.forEach(([p, l], i) => {
+  const x = (i % 2) * W / 2, y = (1 - Math.floor(i / 2)) * H / 2;
+  renderer.setViewport(x, y, W / 2, H / 2); renderer.setScissor(x, y, W / 2, H / 2);
+  cam.position.set(...p); cam.lookAt(...l); renderer.render(scene, cam);
+});
+window.__ready = true;
+</script>
+</body>
+</html>

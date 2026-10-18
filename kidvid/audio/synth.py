@@ -183,6 +183,15 @@ def bark(f0=560):
     return s * np.minimum(1, t / 0.008) * np.exp(-t * 16) * 0.9
 
 
+def thud(k=1.0):
+    """Plastic toy landing on grass: soft low thump with a little hollow knock."""
+    t = tt(0.22)
+    body = np.sin(2 * np.pi * np.cumsum(120 * np.exp(-t * 14) + 70) / SR) * np.exp(-t * 22)
+    knock = fftfilt(noise(0.22), lo=700, hi=2600) * np.exp(-t * 60) * 0.35
+    grass = fftfilt(noise(0.22), lo=2500, hi=8000) * np.exp(-t * 35) * 0.12
+    return (body + knock + grass) * 0.55 * min(1.2, k)
+
+
 def tick():
     t = tt(0.05)
     return np.sin(2 * np.pi * 2400 * t) * np.exp(-t * 90) * 0.12
@@ -259,6 +268,8 @@ for i, e in enumerate(TL["events"]):
         add(sfx, t, tick(), 1.0, -0.4)
     elif typ == "boing":
         add(sfx, t, ball_boing(74), 0.6 * k, 0.5)
+    elif typ == "thud":
+        add(sfx, t, thud(k), 0.9, -0.2)
     elif typ == "pomf":
         add(sfx, t, pomf(), 0.8, 0.1)
     elif typ == "step":

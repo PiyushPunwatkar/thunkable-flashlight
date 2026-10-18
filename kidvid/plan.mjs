@@ -4,6 +4,7 @@
 //   node plan.mjs lines    <script.json> <lines.json>                  # VO clips for tts.py
 //   node plan.mjs timeline <script.json> <timeline.json> [vo.json]     # vo.json from tts.py (else durations are estimated)
 import fs from 'node:fs';
+import { contactsOf, bonusBall, LETTER_DROP, PROP_DROP, CRITTERS } from './src/physics.js';
 
 const [mode, scriptPath, out, voPath] = process.argv.slice(2);
 const S = JSON.parse(fs.readFileSync(scriptPath, 'utf8'));
@@ -58,11 +59,13 @@ S.beats.forEach((b, i) => {
     const color = b.color || PALETTE[li % PALETTE.length];
     Object.assign(B, { letter: b.letter, word: b.word, color, prop: b.prop ?? null, emoji: b.emoji ?? null, caption: b.caption ?? true, idx: li++ });
     seen.push({ ch: b.letter, color });
-    B.reveal = t0; ev(t0, 'sparkle'); ev(t0 + 0.2, 'pop', { k: 0.8 });
+    B.reveal = t0; ev(t0, 'sparkle');
+    contactsOf(LETTER_DROP.y0, LETTER_DROP.e).forEach((c) => ev(t0 + LETTER_DROP.delay + c.t, 'thud', { k: c.v / 4.2 }));
     const lineT = t0 + 0.6, markT = VO[`b${i}_line`]?.markT ?? 0.25 + (b.lead ?? `${b.letter} is for`).length * 0.068;
     let u = say(`b${i}_line`, lineT);
     B.wordT = lineT + markT; B.wordDur = Math.max(0.3, u - B.wordT);
-    if (B.prop) ev(B.wordT, 'pop', { k: 1.2 });
+    if (B.prop && CRITTERS.test(B.prop)) ev(B.wordT + 0.5, 'pomf', { k: 0.5 });
+    else if (B.prop) contactsOf(PROP_DROP.y0, PROP_DROP.e[B.prop.toLowerCase()] ?? 0.3).forEach((c) => ev(B.wordT + c.t, 'thud', { k: (c.v / 4) * 0.6 }));
     if (B.caption) [...b.word].forEach((_, k) => ev(B.wordT + (k / b.word.length) * B.wordDur * 0.75, 'type'));
     if (/^(cat|kitten)$/i.test(b.prop || '')) { B.meowT = u + 0.05; say(`b${i}_meow`, B.meowT); u = B.meowT + dur(`b${i}_meow`); }
     B.cheerT = u + 0.12; ev(B.cheerT + 0.32, 'pomf');
@@ -72,16 +75,14 @@ S.beats.forEach((b, i) => {
     if (b.praise) { B.praiseT = u; u = say(`b${i}_praise`, u) + 0.1; ev(B.praiseT, 'chime'); }
     if (b.bonus) {
       B.bonus = { name: b.bonus, t: (B.askT ?? B.cheerT) + 0.1 };
-      const bt = B.bonus.t;
-      [0.55, 0.95, 1.25, 1.45].forEach((d, k) => ev(bt + d, 'boing', { k: 1 - k * 0.22 }));
     }
-    B.exitT = u + 0.25; ev(B.exitT, 'whoosh');
+    B.exitT = u + 0.25; ev(B.exitT, 'whoosh'); ev(B.exitT + 0.75, 'thud', { k: 0.45 });
     t = B.exitT + 0.4;
   } else if (b.type === 'dance') {
     const letters = [...(b.letters ?? seen.map((s) => s.ch).join(''))];
     B.letters = letters.map((ch, k) => ({ ch, color: seen.find((s) => s.ch === ch)?.color ?? PALETTE[(li + k) % PALETTE.length] }));
     ev(t0, 'shimmer'); ev(t0 + 0.1, 'tada');
-    for (let k = 0; k < 6; k++) ev(t0 + 0.15 + k * 0.2, 'step', { k });
+    B.letters.forEach((_, k) => [0.45, 0.9].forEach((d) => ev(t0 + 0.2 + k * 0.12 + d, 'thud', { k: 0.35 })));
     t = sayAll(b, i, t0 + 0.9);
     t = Math.max(t + 0.3, t0 + (b.min ?? 4.5));
   } else if (b.type === 'outro') {
@@ -96,9 +97,13 @@ S.beats.forEach((b, i) => {
   beats.push(B);
 });
 
+// the bonus ball's bounces come from the same simulation the renderer plays back
+const bonusB = beats.find((x) => x.bonus), danceB = beats.find((x) => x.type === 'dance');
+if (bonusB) bonusBall(bonusB.bonus.t, danceB?.t0, t + 1).bounces.forEach((x) => ev(x.t, 'boing', { k: Math.min(1, x.v / 4) }));
+
 const timeline = {
   title: S.title ?? 'Untitled', ...fmt, duration: +t.toFixed(3),
-  host, music: { bpm: 112, ...S.music }, beats, vo: vo.sort((a, b) => a.t - b.t), events: events.sort((a, b) => a.t - b.t),
+  host, letterStyle: S.letterStyle ?? 'toy', music: { bpm: 112, ...S.music }, beats, vo: vo.sort((a, b) => a.t - b.t), events: events.sort((a, b) => a.t - b.t),
 };
 fs.writeFileSync(out, JSON.stringify(timeline));
 console.log(`${timeline.title}: ${timeline.duration.toFixed(2)} s, ${beats.length} beats, ${vo.length} VO clips, ${Math.ceil(timeline.duration * fmt.fps)} frames`);

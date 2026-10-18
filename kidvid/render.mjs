@@ -43,7 +43,7 @@ const page = await browser.newPage({ viewport: { width: W, height: H }, deviceSc
 page.on('console', (m) => { if (m.type() === 'error' || m.type() === 'warning') console.error('[page]', m.text()); });
 page.on('pageerror', (e) => console.error('[pageerror]', e.message));
 await page.addInitScript((tl) => { window.__TL = tl; }, TL);
-await page.goto(`http://127.0.0.1:${srv.address().port}/kidvid/src/index.html?w=${W}&h=${H}&msaa=${process.env.MSAA ?? 4}&bokeh=${process.env.BOKEH ?? 1}`, { waitUntil: 'domcontentloaded', timeout: 300000 });
+await page.goto(`http://127.0.0.1:${srv.address().port}/kidvid/src/index.html?w=${W}&h=${H}&cam=${process.env.CAM ?? ""}&${process.env.Q2 ?? ''}&msaa=${process.env.MSAA ?? 4}&bokeh=${process.env.BOKEH ?? 1}`, { waitUntil: 'domcontentloaded', timeout: 300000 });
 await page.waitForFunction(() => window.__ready === true, null, { timeout: 600000 });
 
 fs.mkdirSync(out, { recursive: true });

@@ -28,12 +28,12 @@ A childlike, high, cheerful single voice. Behind it are a light music bed and sp
 | Observation | Template rule (`kidvid`) |
 |---|---|
 | Locked-off wide, eye level, 16:9 | Static camera with a tiny breathing drift; the host sits at x≈0.2 and the letter slot at x≈−0.8, auto-fit to any aspect |
-| Pixar look: soft sun, shallow DOF, bloom, pastel saturation | PBR/sheen materials, sun + rim + hemisphere light, bokeh focused on the host, light bloom |
+| Pixar look: soft sun, shallow DOF, bloom, pastel saturation | Pushed further toward realism: physical sky + image lighting, sun from back-left, ACES, sun-only bloom, DOF with focus pulls, grain and lens fringing |
 | One letter at a time in a fixed left slot | `letter` beat: reveal → word → cheer → optional ask/wait/praise → exit |
-| Letter forms out of sparkles | Sparkle swirl (2D) + sparkle cloud (3D) + emissive flash while the letter pops in with overshoot |
+| Letter forms out of sparkles | Sparkle swirl while the letter fades in mid-air, then it falls with gravity, bounces (restitution 0.28) and rocks to rest |
 | Caption typed in under the letter | Overlay caption timed to the spoken word (`markT` measured from TTS), per-character pop |
 | Word props: apple at the base, kitten peeking over the top | `makeProp`: `beside` or `peek` placement; emoji-in-bubble fallback for any other word |
-| Host reacts: looks at the letter, then camera, barks, hops | Performance layers driven by the timeline (gaze, ear perk, hop, happy eyes, tail wag, bark) |
+| Host reacts: looks at the letter, then camera, barks, hops | Timeline targets drive a spring rig: eyes lead the head, ears and tail follow through, the paws stay planted by IK; startle on the thud, crouch-hop-land on the cheer, head tilt on questions |
 | Bubbles + sparkles = constant gentle motion | Ambient bubbles after the first letter, pollen, swaying flowers and grass |
-| Finale: letters come alive and dance | `dance` beat: letters grow limbs and faces, march in, and bounce on the music beat |
+| Finale: letters come alive and dance | `dance` beat: letters hop in from the back row and bounce on the beat while the host play-bows and sits panting; `letterStyle: cartoon` adds the reference's limbs and faces |
 | AI artefacts: garbled "AP P", extra "D", VO/picture drift, cut-off line | Everything is deterministic: captions are typeset, letters come from the script, and the timeline is built from the real voice durations, so picture and sound cannot drift |

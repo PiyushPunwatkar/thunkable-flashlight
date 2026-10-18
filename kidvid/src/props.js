@@ -4,6 +4,7 @@ import { TextGeometry } from 'three/addons/geometries/TextGeometry.js';
 import { mesh, glossy, std, plush, apple, starGeo } from '../../socky/src/sets.js';
 import * as U from '../../socky/src/util.js';
 import { Critter } from './critter.js';
+import { PROP_DROP } from './physics.js';
 
 const { clamp, lerp } = U;
 
@@ -21,7 +22,8 @@ export class Letter {
     geo.translate(-(bb.min.x + bb.max.x) / 2, -bb.min.y, -(bb.min.z + bb.max.z) / 2);
     geo.computeBoundingBox();
     this.h = geo.boundingBox.max.y; this.w = geo.boundingBox.max.x * 2; this.front = geo.boundingBox.max.z;
-    this.mat = glossy(color, { roughness: 0.18, clearcoatRoughness: 0.06, emissive: color, emissiveIntensity: 0.08, transparent: true });
+    // injection-moulded plastic: glossy clear coat over a slightly rough base
+    this.mat = glossy(color, { roughness: 0.38, clearcoat: 0.6, clearcoatRoughness: 0.18, envMapIntensity: 0.55, emissive: color, emissiveIntensity: 0.03 });
     this.root = new THREE.Group();
     this.body = new THREE.Group(); this.root.add(this.body);
     this.mesh = mesh(geo, this.mat); this.body.add(this.mesh);
@@ -75,25 +77,24 @@ export class Letter {
     }
   }
 
-  // s: pos, appear 0..1 (pop-in), alive 0..1, t, dance 0..1, beat (phase), yaw, glow
+  // Physically driven toy. s: pos, rot [x,y,z], squash 0..1, opacity, glow, t,
+  // alive 0..1 + beat (cartoon style only: eyes, arms and shoes appear and dance).
   update(s) {
-    const r = this.root, ap = clamp(s.appear ?? 1, 0, 1);
-    r.visible = ap > 0.001;
+    const r = this.root, op = clamp(s.opacity ?? 1, 0, 1);
+    r.visible = op > 0.01;
     if (!r.visible) return;
-    const t = s.t ?? 0, al = s.alive ?? 0, d = s.dance ?? 0, bp = s.beat ?? t * 2;
-    const pop = U.easeOutBack(ap);
-    const bounce = Math.abs(Math.sin(bp * Math.PI)) * 0.09 * d;
-    r.position.set(s.pos[0], (s.pos[1] ?? 0) + 0.21 * al + bounce + Math.sin(t * 1.6 + this.ch.charCodeAt(0)) * 0.012 * (1 - d), s.pos[2]);
-    r.scale.setScalar(Math.max(0.001, pop * (s.scale ?? 1)));
-    r.rotation.set(0, (s.yaw ?? 0) + Math.sin(t * 1.1 + this.ch.charCodeAt(0)) * 0.08 * (1 - d), Math.sin(bp * Math.PI) * 0.12 * d);
-    const sq = Math.sin(bp * Math.PI * 2) * 0.05 * d;
-    this.body.scale.set(1 + sq, 1 - sq, 1);
-    this.mat.emissiveIntensity = 0.08 + 0.6 * (s.glow ?? 0);
-    this.mat.opacity = s.opacity ?? 1;
+    const t = s.t ?? 0, al = s.alive ?? 0, bp = s.beat ?? t * 2;
+    r.position.set(...s.pos); r.rotation.set(...(s.rot ?? [0, 0, 0]));
+    r.scale.setScalar(s.scale ?? 1);
+    const sq = (s.squash ?? 0) * 0.05;
+    this.body.scale.set(1 + sq * 0.5, 1 - sq, 1 + sq * 0.5);
+    this.mat.emissiveIntensity = 0.03 + 0.5 * (s.glow ?? 0);
+    this.mat.opacity = op; this.mat.transparent = op < 0.999;
     this.alive.visible = al > 0.02;
+    if (!this.alive.visible) return;
     this.alive.scale.setScalar(Math.max(0.001, al));
-    this.legsL.forEach((l, i) => { l.rotation.x = Math.sin(bp * Math.PI + i * Math.PI) * 0.5 * d; });
-    this.armsL.forEach((a, i) => { const sx = i ? 1 : -1; a.rotation.z = sx * (0.5 + 0.6 * Math.sin(bp * Math.PI + i)) * d - sx * 0.4 * (1 - d) * al; });
+    this.legsL.forEach((l, i) => { l.rotation.x = Math.sin(bp * Math.PI + i * Math.PI) * 0.5; });
+    this.armsL.forEach((a, i) => { const sx = i ? 1 : -1; a.rotation.z = sx * (0.5 + 0.6 * Math.sin(bp * Math.PI + i)); });
     const blink = (t * 0.9 + this.ch.charCodeAt(0) * 0.37) % 3 < 0.12 ? 0.1 : 1;
     this.eyeL.forEach((e) => (e.scale.y = blink));
   }
@@ -139,14 +140,14 @@ function emojiToken(emoji) {
   return g;
 }
 
-// returns { obj, place: 'beside' | 'peek', update?(state) }
+// returns { obj, place: 'drop' (falls beside the letter) | 'trot' (animal leaps out from behind it), critter?, scale, e }
 export function makeProp(name, { emoji, font } = {}) {
   const k = (name || '').toLowerCase();
   if (k === 'cat' || k === 'kitten') {
-    const c = new Critter('kitten'); return { obj: c.group, place: 'peek', critter: c, scale: 0.6 };
+    const c = new Critter('kitten'); return { obj: c.group, place: 'trot', critter: c, scale: 0.46 };
   }
   if (k === 'dog' || k === 'puppy') {
-    const c = new Critter('puppy', { fur: '#b8763a', earC: '#8a5226', accent: '#ff5a8a' }); return { obj: c.group, place: 'beside', critter: c, scale: 0.38 };
+    const c = new Critter('puppy', { fur: '#9c6430', light: '#d9b48a', dark: '#6e4220', collar: '#d04a6a' }); return { obj: c.group, place: 'trot', critter: c, scale: 0.42 };
   }
   const table = {
     apple: () => { const a = apple(); a.scale.setScalar(0.5); a.position.y = 0.17; const g = new THREE.Group(); g.add(a); return g; },
@@ -154,8 +155,8 @@ export function makeProp(name, { emoji, font } = {}) {
     egg, fish,
     star: () => { const s = mesh(starGeo(0.18), glossy('#ffd21f', { emissive: '#ffb800', emissiveIntensity: 0.3 })); s.position.y = 0.2; const g = new THREE.Group(); g.add(s); return g; },
   };
-  if (table[k]) return { obj: table[k](), place: 'beside', scale: 1 };
-  return { obj: emojiToken(emoji || '⭐'), place: 'beside', scale: 1 };
+  if (table[k]) return { obj: table[k](), place: 'drop', scale: 1, e: PROP_DROP.e[k] };
+  return { obj: emojiToken(emoji || '⭐'), place: 'drop', scale: 1, e: 0.3 };
 }
 
 // ---------------------------------------------------------------- bubbles
@@ -168,7 +169,7 @@ const BUBBLE_MAT = () => (BUBBLE_MAT.m ||= new THREE.ShaderMaterial({
     void main(){ float f = 1.0 - max(dot(vN, vV), 0.0); float rim = pow(f, 2.2);
       vec3 c = mix(vec3(1.0), hue(f*1.6 + vN.y*0.4 + 0.2), 0.55);
       float spec = pow(max(dot(reflect(-normalize(vec3(-0.5,0.7,0.6)), vN), vV), 0.0), 60.0);
-      gl_FragColor = vec4(min(c*(0.85+spec*1.2), vec3(1.0)), min(rim*0.7 + 0.04 + spec*0.8, 1.0)*opacity);
+      gl_FragColor = vec4(min(c*(0.7+spec*1.2), vec3(1.0)), min(rim*0.32 + 0.015 + spec*0.6, 1.0)*opacity);
       #include <colorspace_fragment>
     }`,
 }));
