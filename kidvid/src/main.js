@@ -214,9 +214,10 @@ function hostT(t) {
       T.sit = Math.max(T.sit, ss(b.t0 + 1.3, b.t0 + 1.8, t));
       T.pant = Math.max(T.pant, 0.75 * ss(b.t0 + 1.5, b.t0 + 2, t));
       T.squint = Math.max(T.squint, bow);
-      T.nod += 0.05 * Math.sin(beat * Math.PI) * ss(b.t0 + 1.5, b.t0 + 2, t);
+      const watch = ss(b.t0 + 1.6, b.t0 + 2.1, t) * (1 - ss(b.t1 - 0.4, b.t1 + 0.1, t)); // back to the viewer for the goodbye
+      T.nod += 0.05 * Math.sin(beat * Math.PI) * watch;
       const n = b.letters.length, k = Math.floor(beat / 2) % n;
-      lookAt(slotOf(k, n).map((v, i) => (i === 1 ? 0.35 : v)), ss(b.t0 + 1.6, b.t0 + 2.1, t) * 0.75);
+      lookAt(slotOf(k, n).map((v, i) => (i === 1 ? 0.55 : v)), watch * 0.7);
       T.lift = Math.max(T.lift, win(b.t1 - 1.6, b.t1 - 1.3, b.t1 - 0.5, b.t1 - 0.2, t)); T.liftWave = 1;
     } else if (b.type === 'outro') {
       if (t < b.t0 - 0.5) continue;
