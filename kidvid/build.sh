@@ -5,7 +5,7 @@
 # (https://github.com/thewh1teagle/kokoro-onnx/releases/tag/model-files-v1.0)
 set -euo pipefail
 SCRIPT=$(realpath "${1:?script.json}")
-WORK=$(mkdir -p "${2:?work dir}" && realpath "$2"); MODELS=${3:?kokoro model dir}; JOBS=${4:-2}
+WORK=$(mkdir -p "${2:?work dir}" && realpath "$2"); MODELS=${3:?kokoro model dir}; JOBS=${4:-1}
 HERE=$(cd "$(dirname "$0")" && pwd)
 mkdir -p "$WORK/frames" "$WORK/vo"
 

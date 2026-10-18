@@ -49,7 +49,7 @@ await page.waitForFunction(() => window.__ready === true, null, { timeout: 60000
 fs.mkdirSync(out, { recursive: true });
 const shoot = async (t, file, q) => {
   await page.evaluate((tt) => window.renderAt(tt), t);
-  fs.writeFileSync(file, await page.screenshot({ type: 'jpeg', quality: q, clip: { x: 0, y: 0, width: W, height: H } }));
+  fs.writeFileSync(file, await page.screenshot({ type: 'jpeg', quality: q, clip: { x: 0, y: 0, width: W, height: H }, timeout: 0 }));
 };
 if (mode === 'stills') {
   for (const t of a.split(',').map(Number)) {

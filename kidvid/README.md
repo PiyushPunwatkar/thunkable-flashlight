@@ -26,7 +26,7 @@ script.json ─► plan.mjs lines ─► audio/tts.py (Kokoro) ─► vo/*.wav +
 ./build.sh scripts/buddy_abc.json /tmp/work /path/to/kokoro-models [render_workers]
 ```
 
-`kokoro-models` needs `kokoro-v1.0.onnx` and `voices-v1.0.bin` from the [kokoro-onnx model release](https://github.com/thewh1teagle/kokoro-onnx/releases/tag/model-files-v1.0). Rendering uses software WebGL in headless Chromium, at about 7.5 s per 1280×720 frame on 4 CPU cores (a 25 s video takes about 80 minutes; the fur is half of that). Frame rendering can be resumed: re-running skips frames that already exist.
+`kokoro-models` needs `kokoro-v1.0.onnx` and `voices-v1.0.bin` from the [kokoro-onnx model release](https://github.com/thewh1teagle/kokoro-onnx/releases/tag/model-files-v1.0). Rendering uses software WebGL in headless Chromium, at about 7.5 s per 1280×720 frame on 4 CPU cores (a 25 s video takes about 80 minutes; the fur is half of that). Frame rendering can be resumed: re-running skips frames that already exist. Software WebGL already uses every core, so extra `render_workers` (default 1) only help on machines with many more cores.
 
 Preview stills before committing to a full render (durations are estimated when `vo.json` is omitted):
 
